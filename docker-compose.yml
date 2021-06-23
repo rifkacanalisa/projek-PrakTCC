@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+  rumahmakan_db:
+    container_name: rumahmakan_db
+    image: mysql:8.0
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - rumahmakan_volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rifka
+      MYSQL_DATABASE: rumah_makan
+      MYSQL_USER: rifka
+      MYSQL_PASSWORD: rifka
+    networks:
+      - rumahmakan_network
+    ports:
+      - "3301:3306"
+
+  pelanggan_db:
+    container_name: pelanggan_db
+    image: mysql:8.0
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - pelanggan_volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rifka
+      MYSQL_DATABASE: pelanggan_rumah_makan
+      MYSQL_USER: rifka
+      MYSQL_PASSWORD: rifka
+    networks:
+      - rumahmakan_network
+    ports:
+      - "3302:3306"
+
+  rumah_app:
+    container_name: rumah_app
+    build: .
+    restart: always
+    environment:
+      BASE_URL: http://34.145.25.191/
+    depends_on:
+      - rumahmakan_db
+      - pelanggan_db
+    networks:
+      - rumahmakan_network
+    ports:
+      - "8090:80"
+
+networks:
+  rumahmakan_network:
+volumes:
+  - rumahmakan_volume:
+  - pelanggan_volume:
